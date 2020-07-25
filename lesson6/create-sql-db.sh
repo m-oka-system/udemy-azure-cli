@@ -3,8 +3,14 @@
 # 変数
 rgName="azcli-rg"
 location="japaneast"
+appServicePlanName="e-azcli-pln"
+webAppName="e-azcli-app12345"
+dnsName="m-oka-system.com"
+recordSetName="www"
+webAppHostName=$(az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --out tsv)
+fqdn=${recordSetName}.${dnsName}
 
-sqlServerName="e-paas-sql${RANDOM}"
+sqlServerName="e-paas-sql12345"
 sqlLogin="sqladmin"
 sqlPassword="My5up3rStr0ngPaSw0rd!"
 firewallRuleName="AllowAzureService"
@@ -16,8 +22,7 @@ sqlEdition="Basic"
 sqlSize="2GB"
 
 # SQLServerを作成
-az sql server create --resource-group $rgName \
-  --location $location \
+az sql server create --resource-group $rgName --location $location \
   --name $sqlServerName  \
   --admin-user $sqlLogin \
   --admin-password $sqlPassword
