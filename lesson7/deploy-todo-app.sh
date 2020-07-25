@@ -40,9 +40,6 @@ fi
 # ローカルGitの有効化
 az webapp deployment source config-local-git --resource-group $rgName --name $webAppName
 
-# ユーザー資格情報を登録
-# az webapp deployment user set --user-name <your user name> --password <your password>
-
 # WebAppsにSQLデータベースの接続文字列を登録
 az webapp config connection-string set --resource-group $rgName \
   --name $webAppName \
