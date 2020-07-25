@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
+set -e
 
 # 変数
 rgName="azcli-rg"
 location="japaneast"
 appServicePlanName="e-azcli-pln"
 webAppName="e-azcli-app12345"
-dnsName="m-oka-system.com"
+# dnsName=""
 recordSetName="www"
 webAppHostName=$(az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --out tsv)
 fqdn=${recordSetName}.${dnsName}
@@ -30,14 +31,17 @@ webAppCred=$(az webapp deployment list-publishing-credentials --resource-group $
 beforeCode='@Html.ActionLink("My TodoList App", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })'
 afterCode='@Html.ActionLink((string)Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME"), "Index", new { controller = "Todos" }, new { @class = "navbar-brand" })'
 
-# Configure local Git and get deployment URL
-# kuduUrl=$(az webapp deployment source config-local-git --resource-group $rgName --name $webAppName --query url --output tsv)
+# 変数入力済みチェック
+if [ -z "$gitUserName" ] || [ -z "$gitUserEmail" ]; then
+  echo "未定義の変数があります。変数：gitUserName、gitUserEmailの値を定義してください。"
+  exit 1
+fi
 
-# Set the account-level deployment credentials
-# az webapp deployment user set --user-name $gitLogin --password $gitPassword
+# ローカルGitの有効化
+az webapp deployment source config-local-git --resource-group $rgName --name $webAppName
 
-# ローカルGitの有効化は不要
-# ログイン情報はアプリ資格情報を利用する
+# ユーザー資格情報を登録
+# az webapp deployment user set --user-name <your user name> --password <your password>
 
 # WebAppsにSQLデータベースの接続文字列を登録
 az webapp config connection-string set --resource-group $rgName \

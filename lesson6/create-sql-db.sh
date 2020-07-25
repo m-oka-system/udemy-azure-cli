@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
+set -e
 
 # 変数
 rgName="azcli-rg"
 location="japaneast"
 appServicePlanName="e-azcli-pln"
 webAppName="e-azcli-app12345"
-dnsName="m-oka-system.com"
+# dnsName=""
 recordSetName="www"
 webAppHostName=$(az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --out tsv)
 fqdn=${recordSetName}.${dnsName}

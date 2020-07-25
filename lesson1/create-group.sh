@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 # 変数
 rgName="azcli-rg"
