@@ -8,7 +8,7 @@ appServicePlanName="e-azcli-pln"
 webAppName="e-azcli-app12345"
 dnsName=""
 recordSetName="www"
-webAppHostName=$(az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --out tsv)
+webAppHostName=`az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --output tsv`
 fqdn=${recordSetName}.${dnsName}
 
 # 変数入力済みチェック
@@ -18,11 +18,11 @@ if [ -z "$dnsName" ]; then
 fi
 
 # マネージド証明書を作成
-thumbprint=$(az webapp config ssl create --resource-group $rgName \
+thumbprint=`az webapp config ssl create --resource-group $rgName \
   --name $webAppName \
   --hostname $fqdn \
   --query thumbprint \
-  --out tsv)
+  --output tsv`
 
 # TLS/SSLバインディングの追加
 az webapp config ssl bind --resource-group $rgName \

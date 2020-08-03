@@ -15,10 +15,10 @@ recordSetName="www"
 fqdn=${recordSetName}.${dnsName}
 
 # SQLServer
-sqlServerName="e-paas-sql${RANDOM}"
+sqlServerName="e-azcli-sql${RANDOM}"
 sqlLogin="sqladmin"
 sqlPassword="My5up3rStr0ngPaSw0rd!"
-firewallRuleName="AllowAzureService"
+firewallRuleName="AllowAllWindowsAzureIps"
 startIP="0.0.0.0"
 endIP="0.0.0.0"
 
@@ -58,7 +58,7 @@ az webapp create --resource-group $rgName \
 az network dns zone create --resource-group $rgName --name $dnsName
 
 # CNAMEレコードを作成
-webAppHostName=$(az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --out tsv)
+webAppHostName=`az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --output tsv`
 az network dns record-set cname set-record --resource-group $rgName \
   --zone-name $dnsName \
   --record-set-name $recordSetName \
@@ -76,11 +76,11 @@ az webapp config hostname add --resource-group $rgName \
   --hostname $fqdn
 
 # マネージド証明書を作成
-thumbprint=$(az webapp config ssl create --resource-group $rgName \
+thumbprint=`az webapp config ssl create --resource-group $rgName \
   --name $webAppName \
   --hostname $fqdn \
   --query thumbprint \
-  --out tsv)
+  --output tsv`
 
 # TLS/SSLバインディングの追加
 az webapp config ssl bind --resource-group $rgName \
@@ -113,7 +113,7 @@ az sql db create --resource-group $rgName \
 az webapp deployment source config-local-git --resource-group $rgName --name $webAppName
 
 # WebAppsにSQLデータベースの接続文字列を登録
-connectionString=$(az sql db show-connection-string --client ado.net --server $sqlServerName --name $databaseName | sed -e "s/<username>/$sqlLogin/" -e "s/<password>/$sqlPassword/")
+connectionString=`az sql db show-connection-string --client ado.net --server $sqlServerName --name $databaseName | sed -e "s/<username>/$sqlLogin/" -e "s/<password>/$sqlPassword/"`
 az webapp config connection-string set --resource-group $rgName \
   --name $webAppName \
   --settings MyDbConnection="$connectionString" \
@@ -124,7 +124,7 @@ git clone $todoAppURL
 cd $todoAppDir
 
 # ローカルGitの設定
-webAppCred=$(az webapp deployment list-publishing-credentials --resource-group $rgName --name $webAppName --query scmUri --output tsv)
+webAppCred=`az webapp deployment list-publishing-credentials --resource-group $rgName --name $webAppName --query scmUri --output tsv`
 git config --global user.name $gitUserName
 git config --global user.email $gitUserEmail
 git remote add $webAppName $webAppCred

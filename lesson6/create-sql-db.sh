@@ -4,17 +4,17 @@ set -e
 # 変数
 rgName="azcli-rg"
 location="japaneast"
-appServicePlanName="e-azcli-pln"
-webAppName="e-azcli-app12345"
+# appServicePlanName="e-azcli-pln"
+# webAppName="e-azcli-app12345"
 # dnsName=""
-recordSetName="www"
-webAppHostName=$(az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --out tsv)
-fqdn=${recordSetName}.${dnsName}
+# recordSetName="www"
+# webAppHostName=`az webapp show --resource-group $rgName --name $webAppName --query defaultHostName --output tsv`
+# fqdn=${recordSetName}.${dnsName}
 
-sqlServerName="e-paas-sql12345"
+sqlServerName="e-azcli-sql12345"
 sqlLogin="sqladmin"
 sqlPassword="My5up3rStr0ngPaSw0rd!"
-firewallRuleName="AllowAzureService"
+firewallRuleName="AllowAllWindowsAzureIps"
 startIP="0.0.0.0"
 endIP="0.0.0.0"
 

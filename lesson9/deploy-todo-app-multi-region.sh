@@ -6,8 +6,8 @@ rgName="azcli-rg"
 locations=("japaneast" "japanwest")
 
 # AppService
-appServicePlans=("e-paas-pln" "w-paas-pln")
-webAppNames=("e-paas-app${RANDOM}" "w-paas-app${RANDOM}")
+appServicePlans=("e-azcli-pln" "w-azcli-pln")
+webAppNames=("e-azcli-app${RANDOM}" "w-azcli-app${RANDOM}")
 
 # DNSゾーン
 dnsName=""
@@ -15,20 +15,20 @@ recordSetName="www"
 fqdn=${recordSetName}.${dnsName}
 
 # TrafficManger
-tmName="paas-tm${RANDOM}"
+tmName="azcli-tm${RANDOM}"
 
 # KeyVault
 vaultName="e-azcli-vault"
 selfCertName="selfcert"
 
 # SQLServer
-sqlServerName="e-paas-sql${RANDOM}"
+sqlServerName="e-azcli-sql${RANDOM}"
 sqlLogin="sqladmin"
 sqlPassword="My5up3rStr0ngPaSw0rd!"
-firewallRuleName="AllowAzureService"
+firewallRuleName="AllowAllWindowsAzureIps"
 startIP="0.0.0.0"
 endIP="0.0.0.0"
-failoverGroupName="paas-fog${RANDOM}"
+failoverGroupName="azcli-fog${RANDOM}"
 
 # SQLデータベース
 databaseName="MyDatabase"
@@ -60,12 +60,12 @@ done
 # WebAppsを作成
 declare -a webAppIds=()
 for ((i=0; i < ${#webAppNames[*]}; i++)); do
-  webAppId=$(az webapp create --resource-group $rgName --name ${webAppNames[$i]} --plan ${appServicePlans[$i]} --query id --out tsv)
+  webAppId=`az webapp create --resource-group $rgName --name ${webAppNames[$i]} --plan ${appServicePlans[$i]} --query id --output tsv`
   webAppIds+=($webAppId)
 done
 
 # Traffic Managerプロファイルを作成 (優先度ルーティング)
-tmDnsName=$(az network traffic-manager profile create --resource-group $rgName \
+tmDnsName=`az network traffic-manager profile create --resource-group $rgName \
   --name $tmName \
   --routing-method Priority \
   --unique-dns-name $tmName \
@@ -73,7 +73,7 @@ tmDnsName=$(az network traffic-manager profile create --resource-group $rgName \
   --port 80 \
   --ttl 0 \
   --query TrafficManagerProfile.dnsConfig.fqdn \
-  --out tsv)
+  --output tsv`
 
 # Traffic ManagerのエンドポイントにWebAppsを追加
 for ((i=0; i < ${#webAppIds[*]}; i++)); do
@@ -129,12 +129,12 @@ az keyvault set-policy --name $vaultName \
 # WebAppsに自己証明書をインポート
 declare -a thumbprints=()
 for ((i=0; i < ${#webAppNames[*]}; i++)); do
-  thumbprint=$(az webapp config ssl import --resource-group $rgName \
+  thumbprint=`az webapp config ssl import --resource-group $rgName \
     --key-vault $vaultName \
     --key-vault-certificate-name $selfCertName \
     --name ${webAppNames[$i]} \
     --query thumbprint \
-    --out tsv)
+    --output tsv`
     thumbprints+=($thumbprint)
 done
 
@@ -173,7 +173,7 @@ az sql failover-group create --resource-group $rgName \
 az webapp deployment source config-local-git --resource-group $rgName --name $webAppName
 
 # WebAppsにSQLデータベースの接続文字列を登録
-connectionString=$(az sql db show-connection-string --client ado.net --server $sqlServerName --name $databaseName | sed -e "s/<username>/$sqlLogin/" -e "s/<password>/$sqlPassword/")
+connectionString=`az sql db show-connection-string --client ado.net --server $sqlServerName --name $databaseName | sed -e "s/<username>/$sqlLogin/" -e "s/<password>/$sqlPassword/"`
 for ((i=0; i < ${#webAppNames[*]}; i++)); do
   az webapp config connection-string set --resource-group $rgName --name ${webAppNames[$i]} --settings MyDbConnection="$connectionString" --connection-string-type SQLAzure
 done
@@ -194,7 +194,7 @@ git commit -m "Update Layout.cshtml"
 
 # ToDoアプリをWeb Appsにデプロイ
 for ((i=0; i < ${#webAppNames[*]}; i++)); do
-  webAppCred=$(az webapp deployment list-publishing-credentials --resource-group $rgName --name ${webAppNames[$i]} --query scmUri --output tsv)
+  webAppCred=`az webapp deployment list-publishing-credentials --resource-group $rgName --name ${webAppNames[$i]} --query scmUri --output tsv`
   git remote add ${webAppNames[$i]} $webAppCred
   git push ${webAppNames[$i]} master
 done
