@@ -18,9 +18,7 @@ if [ -z "$dnsName" ]; then
 fi
 
 # AppServiceプランをS1にスケールアップ
-az appservice plan update --resource-group $rgName \
-  --name $appServicePlanName \
-  --sku S1
+az appservice plan update --resource-group $rgName --name $appServicePlanName --sku S1
 
 # WebAppsにカスタムドメインを割り当て
 az webapp config hostname add --resource-group $rgName \
