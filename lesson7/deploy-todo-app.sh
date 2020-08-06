@@ -23,7 +23,7 @@ databaseName="MyDatabase"
 # sqlSize="2GB"
 connectionString=`az sql db show-connection-string --client ado.net --server $sqlServerName --name $databaseName | sed -e "s/<username>/$sqlLogin/" -e "s/<password>/$sqlPassword/"`
 
-todoAppURL="https://github.com/Azure-Samples/dotnet-sqldb-tutorial.git"
+todoAppURL="https://github.com/m-oka-system/dotnet-sqldb-tutorial.git"
 todoAppDir="dotnet-sqldb-tutorial"
 gitUserName=""
 gitUserEmail=""
