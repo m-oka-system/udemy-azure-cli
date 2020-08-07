@@ -28,7 +28,7 @@ sqlEdition="Basic"
 sqlSize="2GB"
 
 # Git設定情報
-todoAppURL="https://github.com/Azure-Samples/dotnet-sqldb-tutorial.git"
+todoAppURL="https://github.com/m-oka-system/dotnet-sqldb-tutorial.git"
 todoAppDir="dotnet-sqldb-tutorial"
 gitUserName=""
 gitUserEmail=""
