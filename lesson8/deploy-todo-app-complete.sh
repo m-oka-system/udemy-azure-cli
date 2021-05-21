@@ -82,6 +82,12 @@ thumbprint=`az webapp config ssl create --resource-group $rgName \
   --query thumbprint \
   --output tsv`
 
+# create時にthumbprintを変数に格納できない場合があるためshowコマンドでの取得を追加(2021/5/21)
+thumbprint=`az webapp config ssl show --resource-group $rgName \
+  --certificate-name $fqdn \
+  --query thumbprint \
+  --output tsv`
+
 # TLS/SSLバインディングの追加
 az webapp config ssl bind --resource-group $rgName \
   --name $webAppName \
